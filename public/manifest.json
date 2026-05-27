@@ -1,0 +1,12 @@
+{
+  "name": "ARISE - Hunter Protocol",
+  "short_name": "ARISE",
+  "description": "VLSI Study + Workout Tracker",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#4fc3f7",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
