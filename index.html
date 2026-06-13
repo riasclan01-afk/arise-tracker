@@ -6,15 +6,27 @@
     
     <!-- iOS Optimizations -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="light" />
     <meta name="format-detection" content="telephone=no" />
     <meta name="mobile-web-app-capable" content="yes" />
     
     <title>ARISE Tracker</title>
-    <script type="module" crossorigin src="/arise-tracker/assets/index-D8CpEwq6.js"></script>
-    <link rel="stylesheet" crossorigin href="/arise-tracker/assets/index-MfZWmHGQ.css">
+
+    <!-- KEY FIX: White background before React loads -->
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        background: #f0f3fc !important;
+      }
+      #root {
+        background: #f0f3fc;
+      }
+    </style>
+    <script type="module" crossorigin src="/arise-tracker/assets/index-BuZQpLbd.js"></script>
+    <link rel="stylesheet" crossorigin href="/arise-tracker/assets/index-Dtp7yDeR.css">
   </head>
-  <body>
+  <body style="background: #f0f3fc;">
     <div id="root"></div>
   </body>
 </html>
