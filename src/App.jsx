@@ -243,6 +243,12 @@ export default function App() {
     }
   };
 
+  const handleResetWeek = () => {
+    haptics.light();
+    if (!window.confirm("Reset your study week start date to today? This lets you redo any missed weeks. Your checkboxes are NOT cleared.")) return;
+    setStoredState({ ...state, studyStartDate: getTodayKey() });
+  };
+
   const tabContent = useMemo(() => {
     if (activeTab === "study") {
       return (
@@ -253,7 +259,8 @@ export default function App() {
           onUpdateNote={(id, note) =>
             setStoredState({ ...state, studyNotes: { ...(state.studyNotes || {}), [id]: note } })
           }
-          studyStartDate={state.studyStartDate}   // ← ADDED
+          studyStartDate={state.studyStartDate}
+          onResetWeek={handleResetWeek}
         />
       );
     } else if (activeTab === "workout") {

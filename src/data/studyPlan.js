@@ -137,7 +137,7 @@ export const STUDY_PLAN = [
 ];
 
 export const BOOK_COLORS = {
-  "H&H": { bg: "#1a1400", border: "#ffd700", text: "#ffd700" },
+  "H&H": { bg: "#0a0f1f", border: "#3b82f6", text: "#93c5fd" },
   "SV-D": { bg: "#0d0a1f", border: "#7c4dff", text: "#b39ddb" },
   "SV-V": { bg: "#001a14", border: "#00e5cc", text: "#80cbc4" },
   TB: { bg: "#1a0a00", border: "#ff6d00", text: "#ffb74d" },

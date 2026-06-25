@@ -25,7 +25,8 @@ export default function StudyDashboard({
   studyNotes,
   onToggleStudy,
   onUpdateNote,
-  studyStartDate,   // null until first checkbox tick
+  studyStartDate,
+  onResetWeek,
 }) {
   const today    = new Date();
   const todayKey = today.toISOString().slice(0, 10);
@@ -101,18 +102,35 @@ export default function StudyDashboard({
       animate="visible"
       className="space-y-4"
     >
-      {/* ── Countdown banner ─────────────────────────────────────────────── */}
+      {/* ── Countdown banner + Reset ─────────────────────────────────────── */}
       <motion.div
         variants={itemVariants}
-        className="rounded-sm border border-yellow-500/30 bg-yellow-500/5 px-4 py-3 flex items-center justify-between"
+        className="rounded-sm border border-accentBlue/20 bg-accentBlue/5 px-4 py-3 flex flex-wrap items-center justify-between gap-3"
       >
-        <span className="font-heading text-xs uppercase tracking-[0.14em] text-yellow-400/70">
-          {hasStarted ? "⏱ Next Week Unlocks In" : "⚔ Start Your Journey"}
-        </span>
-        {/* ← font-heading here makes the timer match the week headings */}
-        <span className="font-heading text-sm font-bold tracking-[0.1em] text-yellow-400">
-          {countdown}
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="font-heading text-xs uppercase tracking-[0.14em] text-accentBlue/70">
+            {hasStarted ? "⏱ Next Week Unlocks In" : "⚔ Start Your Journey"}
+          </span>
+          <span className="font-heading text-sm font-bold tracking-[0.1em] text-accentBlue">
+            {countdown}
+          </span>
+        </div>
+        {hasStarted && (
+          <motion.button
+            onClick={onResetWeek}
+            className="flex items-center gap-1.5 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] rounded-sm"
+            style={{
+              border: "1px solid rgba(139,92,246,0.4)",
+              background: "rgba(139,92,246,0.08)",
+              color: "#8b5cf6",
+            }}
+            whileHover={{ background: "rgba(139,92,246,0.16)" }}
+            whileTap={{ scale: 0.96 }}
+            title="Reset your start date to today — use this to redo missed weeks"
+          >
+            ⟳ Reset Week
+          </motion.button>
+        )}
       </motion.div>
 
       {enrichedWeeks.map((week) => (

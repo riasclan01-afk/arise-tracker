@@ -23,12 +23,12 @@ export default function DayTask({ task, checked, note, onToggle, onUpdateNote, i
   };
 
   const containerClass = checked
-    ? "border-[rgba(255,215,0,0.35)] bg-[rgba(255,215,0,0.06)] shadow-lg shadow-yellow-500/10"
+    ? "border-accentBlue/40 bg-accentBlue/8 shadow-lg shadow-accentBlue/10"
     : isToday
-    ? "border-yellow-400/50 bg-yellow-400/5 shadow-lg shadow-yellow-400/10"
+    ? "border-accentBlue/50 bg-accentBlue/5 shadow-lg shadow-accentBlue/10"
     : isPast && !checked
     ? "border-red-500/20 bg-red-500/5"
-    : "border-[var(--border-dim)] bg-bgSecondary/70 hover:border-[rgba(0,208,255,0.2)] hover:bg-[rgba(0,208,255,0.02)]";
+    : "border-[var(--border-dim)] bg-bgSecondary/70 hover:border-[rgba(59,130,246,0.2)] hover:bg-[rgba(59,130,246,0.02)]";
 
   return (
     <motion.div
@@ -63,7 +63,7 @@ export default function DayTask({ task, checked, note, onToggle, onUpdateNote, i
               {task.day}
             </span>
             {isToday && (
-              <span className="mr-2 rounded-sm bg-yellow-400/20 border border-yellow-400/40 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-yellow-400">
+              <span className="mr-2 rounded-sm bg-accentBlue/20 border border-accentBlue/40 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-accentBlue">
                 TODAY
               </span>
             )}
@@ -89,12 +89,12 @@ export default function DayTask({ task, checked, note, onToggle, onUpdateNote, i
           <Edit3 className="w-4 h-4" />
         </motion.button>
 
-        {/* ── Checkbox — YELLOW when checked ──────────────────────────── */}
+        {/* ── Checkbox ─────────────────────────────────────────────────── */}
         <motion.button
           className={`mt-1 flex h-11 w-11 items-center justify-center rounded border transition-all duration-200 ${
             checked
-              ? "border-yellow-400 bg-yellow-400/20 shadow-lg shadow-yellow-400/30"
-              : "border-[var(--border-dim)] bg-transparent hover:border-yellow-400/40 hover:bg-yellow-400/5"
+              ? "border-accentBlue bg-accentBlue/20 shadow-lg shadow-accentBlue/30"
+              : "border-[var(--border-dim)] bg-transparent hover:border-accentBlue/40 hover:bg-accentBlue/5"
           }`}
           onClick={handleToggle}
           aria-label={`Toggle ${task.id}`}
@@ -104,7 +104,7 @@ export default function DayTask({ task, checked, note, onToggle, onUpdateNote, i
           <motion.div
             className={`h-4 w-4 rounded-sm border transition-all duration-200 ${
               checked
-                ? "border-yellow-400 bg-yellow-400 shadow-[0_0_12px_rgba(250,204,21,0.9)]"
+                ? "border-accentBlue bg-accentBlue shadow-[0_0_12px_rgba(59,130,246,0.9)]"
                 : "border-textMuted"
             }`}
             animate={{

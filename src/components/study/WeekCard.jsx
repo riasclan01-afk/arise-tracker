@@ -46,7 +46,7 @@ export default function WeekCard({
                 {`Week ${week.week}`}
               </span>
               {isCurrent && (
-                <span className="rounded-sm border border-yellow-500/50 bg-yellow-500/10 px-2 py-0.5 text-xs text-yellow-400 font-mono tracking-widest animate-pulse">
+                <span className="rounded-sm border border-accentBlue/50 bg-accentBlue/10 px-2 py-0.5 text-xs text-accentBlue font-mono tracking-widest animate-pulse">
                   ● ACTIVE
                 </span>
               )}
