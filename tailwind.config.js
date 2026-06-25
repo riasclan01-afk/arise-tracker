@@ -19,12 +19,12 @@ export default {
         success: "var(--success)",
       },
       fontFamily: {
-        heading: ["Rajdhani", "sans-serif"],
-        body: ["Inter", "sans-serif"],
+        heading: ["Black Ops One", "Rajdhani", "sans-serif"],
+        body: ["Rajdhani", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
       },
       boxShadow: {
-        blueGlow: "0 0 24px rgba(79,195,247,0.25)",
+        blueGlow: "0 0 24px rgba(59,130,246,0.25)",
       },
     },
   },

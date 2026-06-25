@@ -1,32 +1,39 @@
 export const WORKOUT_PLAN = [
   {
-    id: "chest1",
+    id: "chest",
     dayLabel: "Day 1",
-    name: "Chest — Heavy",
+    name: "Chest + Triceps",
     weekDay: "Monday",
     icon: "chest",
     accentColor: "#ff1744",
     exercises: [
-      { id: "c1e1", name: "Barbell Bench Press", sets: "4", reps: "6–8", note: "Focus on chest stretch at bottom" },
-      { id: "c1e2", name: "Incline Dumbbell Press", sets: "3", reps: "8–10", note: "30–45° incline" },
-      { id: "c1e3", name: "Cable Fly (low to high)", sets: "3", reps: "12–15", note: "Squeeze at top" },
-      { id: "c1e4", name: "Push-ups to failure", sets: "2", reps: "Failure", note: "Slow eccentric" },
-      { id: "c1e5", name: "Dips (chest focused)", sets: "3", reps: "10–12", note: "Lean forward slightly" }
+      { id: "ch_e1", name: "Incline Dumbbell Press", sets: "4", reps: "8–10", note: "Bench at 30–45° incline" },
+      { id: "ch_e2", name: "Flat Dumbbell Press", sets: "3", reps: "8–12", note: "Lie flat on bench, control the negative" },
+      { id: "ch_e3", name: "Cable Fly (High to Low)", sets: "2", reps: "12–15", note: "Targets lower chest, squeeze at bottom" },
+      { id: "ch_e4", name: "Cable Fly (Low to High)", sets: "2", reps: "12–15", note: "Targets upper chest, constant tension" },
+      { id: "ch_e5", name: "Parallel Bar Dips (Leaning)", sets: "3", reps: "AMRAP", note: "Lean forward to target lower chest" },
+      { id: "ch_e6", name: "Standing Tricep Cable Pushdown", sets: "3", reps: "12–15", note: "Standing, elbows locked at sides" },
+      { id: "ch_e7", name: "Seated Overhead DB Extension", sets: "3", reps: "10-12", note: "Seated on bench, stretch the long head" },
+      { id: "ch_e8", name: "30 min elliptical", sets: "1", reps: "30 min", note: "Active recovery & Fat burn" }
     ]
   },
   {
-    id: "back1",
+    id: "back",
     dayLabel: "Day 2",
-    name: "Back — Pull",
+    name: "Back — Full",
     weekDay: "Tuesday",
     icon: "back",
     accentColor: "#4fc3f7",
     exercises: [
-      { id: "b1e1", name: "Deadlift", sets: "4", reps: "5–6", note: "Keep spine neutral" },
-      { id: "b1e2", name: "Pull-ups / Lat Pulldown", sets: "4", reps: "8–10", note: "Full stretch at top" },
-      { id: "b1e3", name: "Barbell Row", sets: "3", reps: "8–10", note: "Drive elbows back" },
-      { id: "b1e4", name: "Seated Cable Row", sets: "3", reps: "12", note: "Squeeze scapula" },
-      { id: "b1e5", name: "Face Pulls", sets: "3", reps: "15–20", note: "Rear delt + rotator cuff health" }
+      { id: "bk_e1", name: "Lat Pulldown (Wide Grip)", sets: "3", reps: "8–10", note: "Seated on ground, full stretch" },
+      { id: "bk_e2", name: "Lat Pulldown (Inner Hold)", sets: "3", reps: "8–10", note: "Seated on ground, close neutral grip" },
+      { id: "bk_e3", name: "Lat Pulldown (Reverse Grip Inner)", sets: "3", reps: "8–10", note: "Seated on ground, underhand close grip" },
+      { id: "bk_e4", name: "Cable Row", sets: "3", reps: "10-12", note: "Seated on ground, squeeze scapula" },
+      { id: "bk_e5", name: "Single Arm DB Row", sets: "3", reps: "10–12 each", note: "Knee and hand braced on bench" },
+      { id: "bk_e6", name: "Straight Arm Cable Pulldown", sets: "3", reps: "12-15", note: "Standing, lat isolation, slight hinge" },
+      { id: "bk_e7", name: "Standing Face Pulls", sets: "3", reps: "15–20", note: "Rear delt + rotator cuff health" },
+      { id: "bk_e8", name: "Standing DB Shrugs", sets: "3", reps: "15", note: "Trap development, pause at top" },
+      { id: "bk_e9", name: "30 min elliptical", sets: "1", reps: "30 min", note: "Active recovery & Fat burn" }
     ]
   },
   {
@@ -37,12 +44,12 @@ export const WORKOUT_PLAN = [
     icon: "arms",
     accentColor: "#7c4dff",
     exercises: [
-      { id: "a1e1", name: "Overhead Press (Barbell/DB)", sets: "4", reps: "8–10", note: "Core tight, no arch" },
-      { id: "a1e2", name: "Lateral Raises", sets: "4", reps: "15–20", note: "Slight forward tilt" },
-      { id: "a1e3", name: "Barbell Curl", sets: "3", reps: "10–12", note: "Full supination at top" },
-      { id: "a1e4", name: "Hammer Curl", sets: "3", reps: "12", note: "Brachialis focus" },
-      { id: "a1e5", name: "Tricep Pushdown", sets: "3", reps: "12–15", note: "Elbows locked at sides" },
-      { id: "a1e6", name: "Overhead Tricep Extension", sets: "3", reps: "12", note: "Long head stretch" }
+      { id: "ar_e1", name: "Seated DB Overhead Press", sets: "4", reps: "8–10", note: "Seated on bench (back straight up), core tight" },
+      { id: "ar_e2", name: "Standing Lateral Raises", sets: "4", reps: "15–20", note: "Slight forward tilt, lead with elbows" },
+      { id: "ar_e3", name: "Parallel Bar Dips (Upright)", sets: "3", reps: "AMRAP", note: "Torso straight up, targets front delts & triceps" },
+      { id: "ar_e4", name: "Seated DB Bicep Curl", sets: "3", reps: "10–12", note: "Seated on bench, full supination at top" },
+      { id: "ar_e5", name: "Standing DB Hammer Curl", sets: "3", reps: "12", note: "Brachialis focus, neutral grip" },
+      { id: "ar_e6", name: "30 min elliptical", sets: "1", reps: "30 min", note: "Active recovery & Fat burn" }
     ]
   },
   {
@@ -53,12 +60,12 @@ export const WORKOUT_PLAN = [
     icon: "legs",
     accentColor: "#ffd700",
     exercises: [
-      { id: "l1e1", name: "Barbell Squat", sets: "4", reps: "6–8", note: "Below parallel, drive knees out" },
-      { id: "l1e2", name: "Romanian Deadlift", sets: "3", reps: "10–12", note: "Hamstring stretch focus" },
-      { id: "l1e3", name: "Leg Press", sets: "3", reps: "12–15", note: "High foot placement for hamstrings" },
-      { id: "l1e4", name: "Leg Curl (seated or lying)", sets: "3", reps: "12–15", note: "Slow eccentric" },
-      { id: "l1e5", name: "Calf Raises", sets: "4", reps: "20–25", note: "Full stretch at bottom" },
-      { id: "l1e6", name: "Leg Extension", sets: "3", reps: "15", note: "Quad finisher" }
+      { id: "lg_e1", name: "Dumbbell Goblet Squat", sets: "4", reps: "8–12", note: "Standing, keep chest up" },
+      { id: "lg_e2", name: "Dumbbell Romanian Deadlift", sets: "4", reps: "10–12", note: "Standing, hamstring stretch focus" },
+      { id: "lg_e3", name: "Bulgarian Split Squats", sets: "3", reps: "8-10 each", note: "Rest back foot on the bench, brutal for quads" },
+      { id: "lg_e4", name: "Dumbbell Lying Leg Curl", sets: "3", reps: "12–15", note: "Lie on stomach on the floor, hold DB between feet" },
+      { id: "lg_e5", name: "Standing DB Calf Raises", sets: "4", reps: "20–25", note: "Hold DBs, use a plate under toes if possible" },
+      { id: "lg_e6", name: "30 min elliptical", sets: "1", reps: "30 min", note: "Active recovery & Fat burn" }
     ]
   },
   {
@@ -69,41 +76,42 @@ export const WORKOUT_PLAN = [
     icon: "biceps",
     accentColor: "#00e5cc",
     exercises: [
-      { id: "bi1e1", name: "Incline Dumbbell Curl", sets: "4", reps: "10–12", note: "Maximum stretch position" },
-      { id: "bi1e2", name: "Concentration Curl", sets: "3", reps: "12–15", note: "Mind-muscle connection" },
-      { id: "bi1e3", name: "Cable Curl (low pulley)", sets: "3", reps: "15", note: "Constant tension" },
-      { id: "bi1e4", name: "21s Barbell Curl", sets: "3", reps: "21", note: "7 bottom + 7 top + 7 full" },
-      { id: "bi1e5", name: "20 min incline treadmill walk", sets: "1", reps: "20 min", note: "Active recovery" }
+      { id: "bi_e1", name: "Incline Dumbbell Curl", sets: "4", reps: "10–12", note: "Bench at 45°, maximum stretch on biceps" },
+      { id: "bi_e2", name: "Concentration Curl", sets: "3", reps: "12–15", note: "Seated on bench, elbow locked inside thigh" },
+      { id: "bi_e3", name: "Standing Cable Curl (low pulley)", sets: "3", reps: "15", note: "Constant tension, squeeze at top" },
+      { id: "bi_e4", name: "Cable Wrist Curls (small bar)", sets: "3", reps: "15–20", note: "Standing/kneeling, forearm flexors" },
+      { id: "bi_e5", name: "Cable Reverse Wrist Curls", sets: "3", reps: "15–20", note: "Standing/kneeling, knuckles up" },
+      { id: "bi_e6", name: "30 min elliptical", sets: "1", reps: "30 min", note: "Active recovery & Fat burn" }
     ]
   },
   {
-    id: "chest2",
+    id: "reserve1",
     dayLabel: "Day 6",
-    name: "Chest — Volume",
+    name: "Reserve / Rest",
     weekDay: "Saturday",
-    icon: "chest",
-    accentColor: "#ff1744",
-    exercises: [
-      { id: "c2e1", name: "Incline Barbell Press", sets: "4", reps: "10–12", note: "Upper chest emphasis" },
-      { id: "c2e2", name: "Flat Dumbbell Press", sets: "3", reps: "12–15", note: "More range of motion than barbell" },
-      { id: "c2e3", name: "Pec Deck / Machine Fly", sets: "3", reps: "15", note: "Isolation, squeeze hard" },
-      { id: "c2e4", name: "Cable Crossover", sets: "3", reps: "15–20", note: "All three angles" },
-      { id: "c2e5", name: "Push-ups superset Dips", sets: "3", reps: "Failure each", note: "Burnout finisher" }
+    isReserve: true,
+    accentColor: "#546e7a",
+    reserveOptions: [
+      { id: "res1_chest", name: "Chest + Triceps", color: "#ff1744" },
+      { id: "res1_back", name: "Back — Full", color: "#4fc3f7" },
+      { id: "res1_arms", name: "Arms + Shoulders", color: "#7c4dff" },
+      { id: "res1_legs", name: "Leg Day", color: "#ffd700" },
+      { id: "res1_rest", name: "Rest Day ✦", color: "#00e676" }
     ]
   },
   {
-    id: "back2",
+    id: "reserve2",
     dayLabel: "Day 7",
-    name: "Back — Width + Thickness",
+    name: "Reserve / Rest",
     weekDay: "Sunday",
-    icon: "back",
-    accentColor: "#4fc3f7",
-    exercises: [
-      { id: "b2e1", name: "Wide Grip Pull-ups", sets: "4", reps: "8–10", note: "Lat width focus" },
-      { id: "b2e2", name: "Single Arm DB Row", sets: "3", reps: "10–12 each", note: "Full range, no hip rotation" },
-      { id: "b2e3", name: "T-Bar Row", sets: "3", reps: "10", note: "Thickness builder" },
-      { id: "b2e4", name: "Straight Arm Pulldown", sets: "3", reps: "15", note: "Lat isolation" },
-      { id: "b2e5", name: "Shrugs", sets: "3", reps: "15–20", note: "Trap development" }
+    isReserve: true,
+    accentColor: "#546e7a",
+    reserveOptions: [
+      { id: "res2_chest", name: "Chest + Triceps", color: "#ff1744" },
+      { id: "res2_back", name: "Back — Full", color: "#4fc3f7" },
+      { id: "res2_arms", name: "Arms + Shoulders", color: "#7c4dff" },
+      { id: "res2_legs", name: "Leg Day", color: "#ffd700" },
+      { id: "res2_rest", name: "Rest Day ✦", color: "#00e676" }
     ]
   }
 ];

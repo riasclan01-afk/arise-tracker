@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { db } from "../firebase";
+import { ref, onValue, set } from "firebase/database";
 
 export function useLocalStorage(key, initialValue) {
   const [value, setValue] = useState(() => {
@@ -10,13 +12,30 @@ export function useLocalStorage(key, initialValue) {
     }
   });
 
+  // Listen to Firebase changes in real time
   useEffect(() => {
-    try {
-      window.localStorage.setItem(key, JSON.stringify(value));
-    } catch {
-      // Silently ignore storage quota/privacy mode failures.
-    }
-  }, [key, value]);
+    const dbRef = ref(db, `arise/${key}`);
+    const unsubscribe = onValue(dbRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const firebaseData = snapshot.val();
+        setValue(firebaseData);
+        try {
+          window.localStorage.setItem(key, JSON.stringify(firebaseData));
+        } catch {}
+      }
+    });
+    return () => unsubscribe();
+  }, [key]);
 
-  return [value, setValue];
+  // Write to both localStorage and Firebase on every change
+  const setValueSync = (newValue) => {
+    setValue(newValue);
+    try {
+      window.localStorage.setItem(key, JSON.stringify(newValue));
+    } catch {}
+    const dbRef = ref(db, `arise/${key}`);
+    set(dbRef, newValue);
+  };
+
+  return [value, setValueSync];
 }

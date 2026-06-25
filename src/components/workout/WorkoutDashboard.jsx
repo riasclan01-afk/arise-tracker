@@ -1,3 +1,4 @@
+// components/workout/WorkoutDashboard.jsx - WITH WEIGHT LOGGING
 import { motion } from "framer-motion";
 import { WORKOUT_PLAN } from "../../data/workoutPlan";
 import DayCard from "./DayCard";
@@ -12,7 +13,7 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] } },
 };
 
-export default function WorkoutDashboard({ getWorkoutChecked, onToggleWorkout }) {
+export default function WorkoutDashboard({ getWorkoutChecked, onToggleWorkout, workoutLogs, onUpdateLog }) {
   return (
     <motion.section
       variants={containerVariants}
@@ -22,7 +23,13 @@ export default function WorkoutDashboard({ getWorkoutChecked, onToggleWorkout })
     >
       {WORKOUT_PLAN.map((day) => (
         <motion.div key={day.id} variants={itemVariants}>
-          <DayCard day={day} getChecked={getWorkoutChecked} onToggle={onToggleWorkout} />
+          <DayCard
+            day={day}
+            getChecked={getWorkoutChecked}
+            onToggle={onToggleWorkout}
+            workoutLogs={workoutLogs}
+            onUpdateLog={onUpdateLog}
+          />
         </motion.div>
       ))}
     </motion.section>
