@@ -1,11 +1,11 @@
 // components/study/DayTask.jsx
 import { motion, AnimatePresence } from "framer-motion";
-import { Edit3 } from "lucide-react";
+import { Edit3, Maximize2, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { BOOK_COLORS } from "../../data/studyPlan";
 import { haptics } from "../../utils/haptics";
 
-export default function DayTask({ task, checked, note, onToggle, onUpdateNote, isToday, isPast }) {
+export default function DayTask({ task, checked, note, onToggle, onUpdateNote, isToday, isPast, onFocus }) {
   const [showNoteInput, setShowNoteInput] = useState(false);
   const [noteText, setNoteText]           = useState(note);
   const colors = BOOK_COLORS[task.book] ?? BOOK_COLORS.Review;
@@ -73,6 +73,19 @@ export default function DayTask({ task, checked, note, onToggle, onUpdateNote, i
             {task.side}
           </motion.p>
         </div>
+
+        {/* Focus Button */}
+        {onFocus && (
+          <motion.button
+            onClick={() => { haptics.light(); onFocus(task); }}
+            className={`mt-1 flex h-11 w-11 items-center justify-center rounded border transition-all duration-200 border-[var(--border-dim)] bg-transparent hover:border-accentBlue/30 hover:bg-accentBlue/8 text-textMuted`}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            title="Focus Mode"
+          >
+            <Maximize2 className="w-4 h-4" />
+          </motion.button>
+        )}
 
         {/* Notes Button */}
         <motion.button
@@ -161,6 +174,22 @@ export default function DayTask({ task, checked, note, onToggle, onUpdateNote, i
         >
           📝 {note}
         </motion.div>
+      )}
+
+      {/* Resume Link */}
+      {task.resumeLink && (
+        <div className="mt-2 flex items-center gap-1.5">
+          <ExternalLink className="w-3 h-3 text-accentBlue opacity-60" />
+          <a
+            href={task.resumeLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-mono text-[10px] text-accentBlue opacity-60 hover:opacity-100 hover:underline transition-opacity"
+            onClick={(e) => e.stopPropagation()}
+          >
+            Reference material →
+          </a>
+        </div>
       )}
     </motion.div>
   );

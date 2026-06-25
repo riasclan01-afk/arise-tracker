@@ -1,9 +1,11 @@
 // components/Header.jsx — SHADOW MONARCH ANTIQUE SYSTEM
-import { Activity, Cloud, CloudOff, LogOut } from "lucide-react";
+import { Activity, Cloud, CloudOff, LogOut, Moon, Sun } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
 import { useRef, useState, useEffect } from "react";
+import { useTheme } from "../ThemeContext";
+import { calculateLevel } from "../utils/achievements";
 
 // ─── GOLD CIRCUIT TRACER ─────────────────────────────────────────────────────
 function CircuitLine({ x1, y1, x2, y2, mx, my, delay, duration = 3 }) {
@@ -379,10 +381,11 @@ function RuneChar({ x, y, delay }) {
 // ─── MAIN HEADER ──────────────────────────────────────────────────────────────
 export default function Header({
   overallPercent, studyPercent, workoutPercent,
-  user, isSync, isOnline, lastSync, onEnableSync,
+  user, isSync, isOnline, lastSync, onEnableSync, totalXP,
 }) {
   const headerRef = useRef(null);
   const [dims, setDims] = useState({ w: 900, h: 180 });
+  const { isDark, toggle: toggleTheme } = useTheme();
 
   useEffect(() => {
     const measure = () => {
@@ -401,6 +404,8 @@ export default function Header({
   const handleSignOut = async () => {
     try { await signOut(auth); } catch (e) { console.error(e); }
   };
+
+  const xpInfo = calculateLevel(totalXP || 0);
 
   const W = dims.w;
   const H = dims.h;
@@ -700,20 +705,58 @@ export default function Header({
           </div>
         </div>
 
+        {/* XP Level Bar */}
+        <div className="flex items-center gap-3">
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: "9px", letterSpacing: "0.18em", color: "#8b5cf6", whiteSpace: "nowrap" }}>
+            LV.{xpInfo.level}
+          </span>
+          <div style={{ flex: 1, height: "4px", background: "rgba(139,92,246,0.12)", border: "1px solid rgba(139,92,246,0.15)", position: "relative" }}>
+            <motion.div
+              style={{
+                position: "absolute", inset: "0 auto 0 0",
+                background: "linear-gradient(90deg, #6366f1, #8b5cf6)",
+                boxShadow: "0 0 8px rgba(139,92,246,0.5)",
+              }}
+              initial={{ width: "0%" }}
+              animate={{ width: `${Math.min(100, xpInfo.progress)}%` }}
+              transition={{ duration: 1.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+            />
+          </div>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: "8px", letterSpacing: "0.12em", color: "rgba(139,92,246,0.55)", whiteSpace: "nowrap" }}>
+            {xpInfo.xpInLevel}/{xpInfo.xpNeeded} XP
+          </span>
+        </div>
+
         {/* Bottom bar */}
         <div
           className="flex flex-wrap items-center justify-between gap-3 pt-3"
           style={{ borderTop: "1px solid rgba(59,130,246,0.15)" }}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2"
-            style={{ border: "1px solid rgba(59,130,246,0.3)", background: "rgba(59,130,246,0.06)" }}
-          >
-            <motion.div animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.4, repeat: Infinity }}>
-              <Activity size={14} style={{ color: "#3b82f6" }} />
-            </motion.div>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.14em", color: "#3b82f6" }}>
-              SYSTEM ONLINE
-            </span>
+          <div className="flex items-center gap-3">
+            <div className="inline-flex items-center gap-2 px-4 py-2"
+              style={{ border: "1px solid rgba(59,130,246,0.3)", background: "rgba(59,130,246,0.06)" }}
+            >
+              <motion.div animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.4, repeat: Infinity }}>
+                <Activity size={14} style={{ color: "#3b82f6" }} />
+              </motion.div>
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.14em", color: "#3b82f6" }}>
+                SYSTEM ONLINE
+              </span>
+            </div>
+            {/* Theme toggle */}
+            <motion.button
+              onClick={toggleTheme}
+              className="inline-flex items-center gap-1.5 px-3 py-2"
+              style={{ border: "1px solid rgba(59,130,246,0.25)", background: "rgba(59,130,246,0.04)", color: "#3b82f6" }}
+              whileHover={{ background: "rgba(59,130,246,0.1)" }}
+              whileTap={{ scale: 0.95 }}
+              title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {isDark ? <Sun size={14} /> : <Moon size={14} />}
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.12em" }} className="hidden sm:inline">
+                {isDark ? "LIGHT" : "DARK"}
+              </span>
+            </motion.button>
           </div>
 
           <AnimatePresence mode="wait">

@@ -1,12 +1,13 @@
 import { motion } from "framer-motion";
 import StatCard from "./ui/StatCard";
+import { totalStudyTasks } from "../utils/progress";
 
 export default function StatsBar({ studyDone, workoutDone, streakCount, rank, onStreakClick }) {
   return (
     <section className="grid grid-cols-2 gap-3 md:grid-cols-4">
       <StatCard
         title="Study Progress"
-        value={`${studyDone} / 56`}
+        value={`${studyDone} / ${totalStudyTasks}`}
         valueClassName="text-accentBlue glow-blue"
       />
 
@@ -47,7 +48,7 @@ export default function StatsBar({ studyDone, workoutDone, streakCount, rank, on
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </motion.svg>
           </div>
-          <p className="mt-2 font-heading text-2xl uppercase tracking-wider text-accentGold glow-gold">
+          <p className="mt-2 font-heading text-2xl uppercase tracking-wider text-accentBlue glow-blue">
             {streakCount} days
           </p>
           <p className="mt-1 text-xs font-mono text-textMuted opacity-0 group-hover:opacity-60 transition-opacity">

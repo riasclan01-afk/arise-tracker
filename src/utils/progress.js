@@ -79,12 +79,13 @@ export const buildDefaultState = () => {
     workoutChecked: {},
     workoutLogs: {},
     jobs: [],
+    activityLog: {},       // { "2026-06-25": { study: 2, workout: 3 } }
     pomodoroSessionsToday: 0,
     pomodoroTotalSessions: 0,
     pomodoroDate: now,
     streak: { lastDate: "", count: 0 },
     startDate: now,
-    studyStartDate: now,   // ← THIS sets today as start date automatically
+    studyStartDate: now,
   };
 };
 
@@ -99,10 +100,10 @@ export const normalizeState = (state) => {
     workoutChecked: state?.workoutChecked ?? {},
     workoutLogs: state?.workoutLogs ?? {},
     jobs: state?.jobs ?? [],
+    activityLog: state?.activityLog ?? {},
     pomodoroSessionsToday: state?.pomodoroSessionsToday ?? 0,
     pomodoroTotalSessions: state?.pomodoroTotalSessions ?? 0,
     pomodoroDate: state?.pomodoroDate ?? defaults.pomodoroDate,
-    // ← Always falls back to today if missing or null
     studyStartDate: state?.studyStartDate ?? today,
     streak: {
       lastDate: state?.streak?.lastDate ?? "",

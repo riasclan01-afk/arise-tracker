@@ -2,6 +2,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useStats } from "../hooks/useStats";
+import { ACHIEVEMENTS, getUnlockedIds, buildStatsForAchievements } from "../utils/achievements";
 
 const STAT_COLORS = {
   STR: "#ef4444",
@@ -79,13 +80,17 @@ function BlueDivider() {
 }
 
 // ── Main Modal ───────────────────────────────────────────────────────────────
-export default function CharacterStats({ open, onClose, studyChecked, workoutChecked, streak, jobs, rank, questState }) {
+export default function CharacterStats({ open, onClose, studyChecked, workoutChecked, streak, jobs, rank, questState, mbaProgress, pomodoroTotal }) {
   const { STR, INT, AGI, VIT, SEN, level, HP, MP } = useStats({
     studyChecked, workoutChecked, streak, jobs,
   });
   const totalXP   = questState?.totalXP   || 0;
   const totalGold = questState?.totalGold || 0;
   const fatigue   = questState?.fatigue   || 0;
+
+  const achievementStats = buildStatsForAchievements({ studyChecked, workoutChecked, streak, jobs, pomodoroTotal, questState, mbaProgress });
+  const unlockedIds = getUnlockedIds(achievementStats);
+  const unlockedCount = unlockedIds.length;
 
   return (
     <AnimatePresence>
@@ -282,6 +287,46 @@ export default function CharacterStats({ open, onClose, studyChecked, workoutChe
                       </div>
                     </div>
                   ))}
+                </motion.div>
+
+                <BlueDivider />
+
+                {/* ── ACHIEVEMENTS ── */}
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.72 }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.2em]" style={{ color: "rgba(224,231,255,0.45)" }}>
+                      Achievements
+                    </span>
+                    <span className="font-mono text-[10px]" style={{ color: "#3b82f6" }}>
+                      {unlockedCount}/{ACHIEVEMENTS.length}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-5 gap-2">
+                    {ACHIEVEMENTS.map((ach) => {
+                      const unlocked = unlockedIds.includes(ach.id);
+                      return (
+                        <motion.div
+                          key={ach.id}
+                          title={unlocked ? `${ach.title}: ${ach.description}` : "Locked"}
+                          style={{
+                            display: "flex", flexDirection: "column", alignItems: "center", gap: "4px",
+                            padding: "8px 4px",
+                            background: unlocked ? "rgba(59,130,246,0.08)" : "rgba(0,0,0,0.3)",
+                            border: `1px solid ${unlocked ? "rgba(59,130,246,0.3)" : "rgba(255,255,255,0.05)"}`,
+                            filter: unlocked ? "none" : "grayscale(1) opacity(0.3)",
+                            cursor: "default",
+                          }}
+                          whileHover={unlocked ? { scale: 1.05 } : {}}
+                          transition={{ duration: 0.15 }}
+                        >
+                          <span style={{ fontSize: "1.4rem", lineHeight: 1 }}>{ach.icon}</span>
+                          <span style={{ fontFamily: "var(--font-mono)", fontSize: "7px", color: "rgba(224,231,255,0.4)", textAlign: "center", lineHeight: 1.2, wordBreak: "break-word" }}>
+                            {ach.title.split(" ").slice(0, 2).join(" ")}
+                          </span>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
                 </motion.div>
 
               </div>

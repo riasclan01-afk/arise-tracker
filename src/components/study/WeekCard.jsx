@@ -20,6 +20,7 @@ export default function WeekCard({
   onUpdateNote,
   isLocked,
   isCurrent,
+  onFocus,
 }) {
   const completed = week.days.filter((d) => checkedMap[d.id]).length;
   const percent   = (completed / week.days.length) * 100;
@@ -119,6 +120,7 @@ export default function WeekCard({
                 onUpdateNote={(note) => onUpdateNote?.(day.id, note)}
                 isToday={day.isToday}
                 isPast={day.isPast}
+                onFocus={onFocus}
               />
             ))}
           </motion.div>

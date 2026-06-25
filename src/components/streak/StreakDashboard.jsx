@@ -3,10 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useMemo } from "react";
 import { X } from "lucide-react";
 
-export default function StreakDashboard({ streak, studyChecked, workoutChecked, onClose }) {
+export default function StreakDashboard({ streak, studyChecked, workoutChecked, activityLog, onClose }) {
   const [streakHistory, setStreakHistory] = useState([]);
 
-  // ── Real counts from actual checked state ─────────────────────────────────
   const realStudyTotal = useMemo(
     () => Object.values(studyChecked || {}).filter(Boolean).length,
     [studyChecked]
@@ -20,31 +19,31 @@ export default function StreakDashboard({ streak, studyChecked, workoutChecked, 
   useEffect(() => {
     const today = new Date();
     const history = [];
-    const activeDayCount = Math.min(streak.count, 30);
-    const studyPerDay = activeDayCount > 0 ? Math.round(realStudyTotal / activeDayCount) : 0;
-    const workoutPerDay = activeDayCount > 0 ? Math.round(realWorkoutTotal / activeDayCount) : 0;
 
-    for (let i = 29; i >= 0; i--) {
+    for (let i = 89; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(date.getDate() - i);
-      const daysSinceStart = 29 - i;
-      const hasActivity = daysSinceStart < streak.count;
+      const key = date.toISOString().split("T")[0];
+      const log = (activityLog || {})[key] || {};
+      const studyTasks = log.study || 0;
+      const workoutExercises = log.workout || 0;
+      const hasActivity = studyTasks > 0 || workoutExercises > 0;
 
       history.push({
-        date: date.toISOString().split("T")[0],
+        date: key,
         dayName: date.toLocaleDateString("en-US", { weekday: "short" }),
         dateNum: date.getDate(),
         month: date.toLocaleDateString("en-US", { month: "short" }),
         hasActivity,
-        studyTasks: hasActivity ? studyPerDay : 0,
-        workoutExercises: hasActivity ? workoutPerDay : 0,
-        totalPoints: hasActivity ? studyPerDay + workoutPerDay : 0,
+        studyTasks,
+        workoutExercises,
+        totalPoints: studyTasks + workoutExercises,
         isToday: i === 0,
       });
     }
 
     setStreakHistory(history);
-  }, [streak.count, realStudyTotal, realWorkoutTotal]);
+  }, [activityLog]);
 
   const currentStreak = streak.count;
 
@@ -90,7 +89,7 @@ export default function StreakDashboard({ streak, studyChecked, workoutChecked, 
         {/* Glowing top edge */}
         <div style={{
           position: "absolute", top: 0, left: "20px", right: "20px", height: "1px",
-          background: "linear-gradient(90deg, transparent 0%, var(--accent-gold) 50%, transparent 100%)",
+          background: "linear-gradient(90deg, transparent 0%, var(--accent-blue) 50%, transparent 100%)",
           opacity: 0.7, pointerEvents: "none",
         }} />
 
@@ -115,7 +114,7 @@ export default function StreakDashboard({ streak, studyChecked, workoutChecked, 
 
         {/* Header */}
         <div className="mb-6">
-          <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.18em", color: "var(--accent-gold)", opacity: 0.8, marginBottom: "4px" }}>
+          <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.18em", color: "var(--accent-blue)", opacity: 0.8, marginBottom: "4px" }}>
             SYSTEM · STREAK LOG
           </p>
           <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "28px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-primary)", lineHeight: 1 }}>
@@ -130,7 +129,7 @@ export default function StreakDashboard({ streak, studyChecked, workoutChecked, 
 
         {/* Stats Grid — plain panels, NO card-glow to avoid double brackets */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-          <HUDStatCard value={currentStreak} label="Current Streak" accent="var(--accent-gold)" />
+          <HUDStatCard value={currentStreak} label="Current Streak" accent="var(--accent-blue)" />
           <HUDStatCard value={longestStreak} label="Longest Streak" accent="var(--accent-purple)" />
           <HUDStatCard value={totalActiveDays} label="Active Days" accent="var(--accent-blue)" />
           <HUDStatCard value={averageDailyPoints} label="Avg Pts / Day" accent="var(--accent-teal)" />
@@ -142,7 +141,7 @@ export default function StreakDashboard({ streak, studyChecked, workoutChecked, 
             <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-muted)" }}>
               Streak Progress
             </p>
-            <p style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--accent-gold)" }}>
+            <p style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--accent-blue)" }}>
               {currentStreak} / {longestStreak > 0 ? longestStreak : "—"} days
             </p>
           </div>
@@ -153,7 +152,7 @@ export default function StreakDashboard({ streak, studyChecked, workoutChecked, 
               transition={{ duration: 1, ease: "easeOut" }}
               style={{
                 height: "100%", borderRadius: "2px",
-                background: "linear-gradient(90deg, var(--accent-gold), var(--accent-purple))",
+                background: "linear-gradient(90deg, var(--accent-blue), var(--accent-purple))",
                 boxShadow: "0 0 8px rgba(255,199,54,0.5)",
               }}
             />
@@ -204,9 +203,9 @@ export default function StreakDashboard({ streak, studyChecked, workoutChecked, 
         {/* Calendar */}
         <div className="mb-8">
           <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--accent-blue)", marginBottom: "14px", opacity: 0.8 }}>
-            Last 30 Days
+            Last 90 Days (Activity Heatmap)
           </p>
-          <div className="grid grid-cols-7 gap-1.5">
+          <div className="grid grid-cols-13 gap-1" style={{ gridTemplateColumns: "repeat(13, 1fr)" }}>
             {streakHistory.map((day, index) => (
               <motion.div
                 key={day.date}
@@ -221,7 +220,7 @@ export default function StreakDashboard({ streak, studyChecked, workoutChecked, 
                     ? "linear-gradient(135deg, rgba(0,208,255,0.10), rgba(124,77,255,0.10))"
                     : "rgba(255,255,255,0.025)",
                   border: day.isToday
-                    ? "1px solid var(--accent-gold)"
+                    ? "1px solid var(--accent-blue)"
                     : day.hasActivity
                     ? "1px solid rgba(0,208,255,0.25)"
                     : "1px solid var(--border-hairline)",
@@ -261,7 +260,7 @@ export default function StreakDashboard({ streak, studyChecked, workoutChecked, 
         >
           <p style={{ textAlign: "center", fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.6 }}>
             {currentStreak >= 7 ? (
-              <><span style={{ color: "var(--accent-gold)", fontFamily: "var(--font-heading)", letterSpacing: "0.08em" }}>STREAK ACTIVE — </span>{currentStreak} days of continuous effort. The System acknowledges your discipline.</>
+              <><span style={{ color: "var(--accent-blue)", fontFamily: "var(--font-heading)", letterSpacing: "0.08em" }}>STREAK ACTIVE — </span>{currentStreak} days of continuous effort. The System acknowledges your discipline.</>
             ) : currentStreak >= 3 ? (
               <><span style={{ color: "var(--accent-blue)", fontFamily: "var(--font-heading)", letterSpacing: "0.08em" }}>PROGRESS DETECTED — </span>{7 - currentStreak} more days to reach a week-long streak.</>
             ) : (

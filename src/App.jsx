@@ -1,7 +1,7 @@
 // App.jsx
 import { AnimatePresence, motion } from "framer-motion";
-import { Swords, ScanLine, ShieldCheck, ShieldAlert, Timer } from "lucide-react";
-import { useMemo, useState, useRef, useEffect } from "react";
+import { Swords, ScanLine, ShieldCheck, ShieldAlert, Timer, Volume2, VolumeX } from "lucide-react";
+import { useMemo, useState, useRef, useEffect, useCallback } from "react";
 import Header from "./components/Header";
 import StatsBar from "./components/StatsBar";
 import TabNav from "./components/TabNav";
@@ -14,6 +14,10 @@ import QuestComplete from "./components/ui/QuestComplete";
 import ShadowParticleBackground from "./components/ui/ShadowParticleBackground";
 import LevelUpScreen from "./components/ui/LevelUpScreen";
 import SyncToast from "./components/ui/SyncToast";
+import AchievementToast from "./components/ui/AchievementToast";
+import FocusMode from "./components/ui/FocusMode";
+import Confetti from "./components/ui/Confetti";
+import MotivationalQuote from "./components/MotivationalQuote";
 import StreakDashboard from "./components/streak/StreakDashboard";
 import CharacterStats from "./components/CharacterStats";
 import DailyQuests from "./components/DailyQuests";
@@ -23,11 +27,12 @@ import { useFirebaseSync } from "./hooks/useFirebaseSync";
 import { usePenalty } from "./hooks/usePenalty";
 import { useStats } from "./hooks/useStats";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
+import { useSoundEffects } from "./hooks/useSoundEffects";
 import { haptics } from "./utils/haptics";
 import {
   ARISE_STORAGE_KEY,
   buildDefaultState,
-  getTodayKey,           // ← ADDED
+  getTodayKey,
   getRankFromPercent,
   getStudyCompletedCount,
   getWorkoutCheckKey,
@@ -36,7 +41,13 @@ import {
   totalStudyTasks,
   updateStreak,
 } from "./utils/progress";
+import {
+  getNewlyUnlocked,
+  buildStatsForAchievements,
+  getUnlockedIds,
+} from "./utils/achievements";
 import { WORKOUT_PLAN } from "./data/workoutPlan";
+import { STUDY_PLAN } from "./data/studyPlan";
 
 const tabVariants = {
   enter:  (direction) => ({ x: direction > 0 ?  60 : -60, opacity: 0 }),
@@ -59,6 +70,13 @@ export default function App() {
   const [showPenalty,         setShowPenalty]         = useState(false);
   const [showLevelUp,         setShowLevelUp]         = useState(null);
   const [showSyncToast,       setShowSyncToast]       = useState(false);
+  const [pendingAchievement,  setPendingAchievement]  = useState(null);
+  const [focusTask,           setFocusTask]           = useState(null);
+  const [confettiTrigger,     setConfettiTrigger]     = useState(0);
+  const [soundEnabled,        setSoundEnabled]        = useState(() => {
+    const saved = localStorage.getItem("arise-sound");
+    return saved !== null ? saved === "true" : true;
+  });
 
   const { level } = useStats({
     studyChecked: state.studyChecked,
@@ -67,6 +85,54 @@ export default function App() {
     jobs: state.jobs || [],
   });
 
+  const sounds = useSoundEffects(soundEnabled);
+  const toggleSound = useCallback(() => {
+    setSoundEnabled((s) => {
+      localStorage.setItem("arise-sound", String(!s));
+      return !s;
+    });
+  }, []);
+
+  // Achievement detection
+  const prevUnlockedRef = useRef(null);
+  const achQueue = useRef([]);
+  useEffect(() => {
+    const achStats = buildStatsForAchievements({
+      studyChecked: state.studyChecked,
+      workoutChecked: state.workoutChecked,
+      streak: state.streak,
+      jobs: state.jobs || [],
+      pomodoroTotal: state.pomodoroTotalSessions || 0,
+      questState: state.questState,
+      mbaProgress: state.mbaProgress || {},
+    });
+    const currentIds = getUnlockedIds(achStats);
+    if (prevUnlockedRef.current === null) {
+      prevUnlockedRef.current = currentIds;
+      return;
+    }
+    const newAchs = getNewlyUnlocked(prevUnlockedRef.current, achStats);
+    if (newAchs.length > 0) {
+      prevUnlockedRef.current = currentIds;
+      achQueue.current = [...achQueue.current, ...newAchs];
+      if (!pendingAchievement) {
+        setPendingAchievement(achQueue.current.shift());
+        sounds.achievement();
+      }
+    } else {
+      prevUnlockedRef.current = currentIds;
+    }
+  }, [state]);
+
+  const handleAchievementDismiss = useCallback(() => {
+    if (achQueue.current.length > 0) {
+      setPendingAchievement(achQueue.current.shift());
+      sounds.achievement();
+    } else {
+      setPendingAchievement(null);
+    }
+  }, [sounds]);
+
   const prevLevelRef = useRef(level);
   const prevIsSyncRef = useRef(isSync);
 
@@ -74,6 +140,7 @@ export default function App() {
     if (level > prevLevelRef.current) {
       setShowLevelUp({ prev: prevLevelRef.current, next: level });
       prevLevelRef.current = level;
+      sounds.levelUp();
     }
   }, [level]);
 
@@ -188,13 +255,13 @@ export default function App() {
     }
   }, [todayDone]);
 
-  // ── UPDATED toggleStudy: sets studyStartDate on very first tick ──────────
+  // ── toggleStudy: sets studyStartDate on first tick, plays sounds, fires confetti ──
   const toggleStudy = (id) => {
     const next        = { ...state.studyChecked, [id]: !state.studyChecked[id] };
     const didComplete = next[id] && !state.studyChecked[id];
     didComplete ? haptics.success() : haptics.light();
+    if (didComplete) sounds.success();
 
-    // Lock in today as the anchor the moment the first checkbox is ever ticked
     const studyStartDate =
       state.studyStartDate
         ? state.studyStartDate
@@ -202,11 +269,30 @@ export default function App() {
         ? getTodayKey()
         : null;
 
+    // Confetti if any week just hit 100%
+    if (didComplete) {
+      STUDY_PLAN.forEach((week) => {
+        const wasComplete = week.days.every((d) => state.studyChecked[d.id]);
+        const nowComplete = week.days.every((d) => next[d.id]);
+        if (!wasComplete && nowComplete) {
+          setConfettiTrigger(Date.now());
+          setTimeout(() => setConfettiTrigger(0), 4000);
+        }
+      });
+    }
+
+    const activityLog = { ...(state.activityLog || {}) };
+    if (didComplete) {
+      const today = getTodayKey();
+      activityLog[today] = { ...(activityLog[today] || {}), study: ((activityLog[today]?.study) || 0) + 1 };
+    }
+
     setStoredState({
       ...state,
       studyChecked: next,
       studyNotes: state.studyNotes || {},
-      studyStartDate,                                              // ← ADDED
+      studyStartDate,
+      activityLog,
       streak: didComplete ? updateStreak(state.streak) : state.streak,
     });
 
@@ -222,8 +308,14 @@ export default function App() {
     const next        = { ...state.workoutChecked, [key]: !state.workoutChecked[key] };
     const didComplete = next[key] && !state.workoutChecked[key];
     didComplete ? haptics.success() : haptics.light();
+    if (didComplete) sounds.success();
+    const wActLog = { ...(state.activityLog || {}) };
+    if (didComplete) {
+      const today = getTodayKey();
+      wActLog[today] = { ...(wActLog[today] || {}), workout: ((wActLog[today]?.workout) || 0) + 1 };
+    }
     setStoredState({ ...state, workoutChecked: next, workoutLogs: state.workoutLogs || {},
-      streak: didComplete ? updateStreak(state.streak) : state.streak });
+      activityLog: wActLog, streak: didComplete ? updateStreak(state.streak) : state.streak });
     if (didComplete) {
       const stamp = Date.now();
       setQuestTrigger(stamp);
@@ -261,6 +353,7 @@ export default function App() {
           }
           studyStartDate={state.studyStartDate}
           onResetWeek={handleResetWeek}
+          onFocusTask={(task) => setFocusTask(task)}
         />
       );
     } else if (activeTab === "workout") {
@@ -346,13 +439,27 @@ export default function App() {
     >
       <QuestComplete trigger={questTrigger} />
       <ShadowParticleBackground />
+      <Confetti trigger={confettiTrigger} />
       <SyncToast show={showSyncToast} onDismiss={() => setShowSyncToast(false)} />
+      <AchievementToast achievement={pendingAchievement} onDismiss={handleAchievementDismiss} />
       <LevelUpScreen
         show={Boolean(showLevelUp)}
         prevLevel={showLevelUp?.prev ?? 1}
         nextLevel={showLevelUp?.next ?? 1}
         onDismiss={() => setShowLevelUp(null)}
       />
+      <AnimatePresence>
+        {focusTask && (
+          <FocusMode
+            task={focusTask}
+            onClose={() => setFocusTask(null)}
+            onComplete={() => {
+              toggleStudy(focusTask.id);
+              setFocusTask(null);
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       {/* ── MODALS ── */}
       <CharacterStats
@@ -364,6 +471,8 @@ export default function App() {
         jobs={state.jobs || []}
         rank={rank}
         questState={questState}
+        mbaProgress={state.mbaProgress || {}}
+        pomodoroTotal={state.pomodoroTotalSessions || 0}
       />
 
       <DailyQuests
@@ -390,6 +499,7 @@ export default function App() {
             streak={state.streak}
             studyChecked={state.studyChecked}
             workoutChecked={state.workoutChecked}
+            activityLog={state.activityLog || {}}
             onClose={() => setShowStreakDashboard(false)}
           />
         )}
@@ -444,6 +554,7 @@ export default function App() {
             workoutPercent={workoutPercent}
             user={user} isSync={isSync} isOnline={isOnline}
             lastSync={lastSync} onEnableSync={enableSync}
+            totalXP={questState?.totalXP || 0}
           />
         </motion.div>
 
@@ -455,9 +566,14 @@ export default function App() {
           />
         </motion.div>
 
+        {/* ── MOTIVATIONAL QUOTE ── */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.1 }}>
+          <MotivationalQuote />
+        </motion.div>
+
         {/* ── ACTION BUTTONS ── */}
         <motion.div
-          className="grid grid-cols-3 gap-2"
+          className="grid grid-cols-4 gap-2"
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.12 }}
@@ -528,6 +644,25 @@ export default function App() {
             <span className="font-mono text-[8px]"
               style={{ color: hasPenalties ? "#dc2626" : "rgba(59,130,246,0.4)" }}>
               {hasPenalties ? `${debuffs.length} ACTIVE` : "CLEAR"}
+            </span>
+          </motion.button>
+
+          {/* Sound Toggle */}
+          <motion.button
+            onClick={() => { haptics.light(); toggleSound(); }}
+            className="relative flex flex-col items-center justify-center gap-1 py-3 font-heading text-xs uppercase tracking-[0.14em]"
+            style={{
+              background: soundEnabled ? "rgba(34,197,94,0.05)" : "rgba(59,130,246,0.05)",
+              border:     soundEnabled ? "1px solid rgba(34,197,94,0.3)" : "1px solid rgba(59,130,246,0.2)",
+              color:      soundEnabled ? "#22c55e" : "rgba(224,231,255,0.3)",
+            }}
+            whileHover={{ background: soundEnabled ? "rgba(34,197,94,0.1)" : "rgba(59,130,246,0.08)" }}
+            whileTap={{ scale: 0.98 }}
+          >
+            {soundEnabled ? <Volume2 size={18} strokeWidth={2} /> : <VolumeX size={18} strokeWidth={2} />}
+            <span>Sound</span>
+            <span className="font-mono text-[8px]" style={{ color: soundEnabled ? "#22c55e" : "rgba(59,130,246,0.35)" }}>
+              {soundEnabled ? "ON" : "OFF"}
             </span>
           </motion.button>
         </motion.div>

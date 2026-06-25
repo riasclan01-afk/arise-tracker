@@ -83,6 +83,14 @@ export default function MotivationalQuote() {
 
   useEffect(() => {
     setQuote(randomQuote());
+    const interval = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setQuote((prev) => randomQuote(prev));
+        setVisible(true);
+      }, 180);
+    }, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const cycleQuote = () => {
